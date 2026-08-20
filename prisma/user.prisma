@@ -1,0 +1,18 @@
+enum Role {
+  TENANT
+  LANDLORD
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(TENANT)
+  phone     String?
+  address   String?
+  isBanned  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

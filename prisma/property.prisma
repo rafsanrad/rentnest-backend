@@ -1,0 +1,23 @@
+enum PropertyStatus {
+  AVAILABLE
+  RENTED
+  UNAVAILABLE
+}
+
+model Property {
+  id           String         @id @default(uuid())
+  title        String
+  description  String
+  location     String
+  price        Decimal        @db.Decimal(10, 2)
+  propertyType String
+  bedrooms     Int
+  bathrooms    Int
+  amenities    String[]
+  imageUrl     String?
+  status       PropertyStatus @default(AVAILABLE)
+  landlordId   String
+  categoryId   String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}

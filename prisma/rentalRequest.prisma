@@ -1,0 +1,18 @@
+enum RentalRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ACTIVE
+  COMPLETED
+}
+
+model RentalRequest {
+  id          String              @id @default(uuid())
+  moveInDate  DateTime
+  message     String?
+  status      RentalRequestStatus @default(PENDING)
+  tenantId    String
+  propertyId  String
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
