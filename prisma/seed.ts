@@ -21,10 +21,8 @@ const prisma = new PrismaClient({
 async function main() {
   console.log("🌱 Starting database seed...");
 
-  // =========================
   // 1. Create Admin
-  // =========================
-
+  
   const hashedPassword = await bcrypt.hash("admin123", 10);
 
   const admin = await prisma.user.upsert({
@@ -42,11 +40,11 @@ async function main() {
     },
   });
 
-  console.log(`✅ Admin created: ${admin.email}`);
+  console.log(`Admin created: ${admin.email}`);
 
-  // =========================
+  
   // 2. Create Categories
-  // =========================
+  
 
   const categories = [
     {
@@ -77,13 +75,13 @@ async function main() {
     });
   }
 
-  console.log("✅ Categories created");
-  console.log("🎉 Database seed completed successfully!");
+  console.log(" Categories created");
+  console.log(" Database seed completed successfully!");
 }
 
 main()
   .catch((error) => {
-    console.error("❌ Seed failed:", error);
+    console.error(" Seed failed:", error);
     process.exit(1);
   })
   .finally(async () => {
