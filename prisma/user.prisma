@@ -15,4 +15,8 @@ model User {
   isBanned  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  properties     Property[]
+  rentalRequests RentalRequest[]
+  reviews        Review[]
 }

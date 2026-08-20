@@ -15,7 +15,11 @@ model Payment {
   provider        PaymentProvider @default(STRIPE)
   status          PaymentStatus   @default(PENDING)
   paidAt          DateTime?
+
   rentalRequestId String          @unique
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rentalRequest RentalRequest @relation(fields: [rentalRequestId], references: [id])
 }

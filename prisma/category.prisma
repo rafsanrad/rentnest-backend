@@ -3,4 +3,6 @@ model Category {
   name        String   @unique
   description String?
   createdAt   DateTime @default(now())
+
+  properties Property[]
 }
