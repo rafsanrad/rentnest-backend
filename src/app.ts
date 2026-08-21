@@ -7,6 +7,7 @@ import adminCategoryRoutes from "./modules/category/admin.category.route";
 import propertyRoutes from "./modules/property/property.route";
 import landlordPropertyRoutes from "./modules/property/landlord.property.route";
 import rentalRequestRoutes from "./modules/rentalRequest/rentalRequest.route";
+import landlordRentalRequestRoutes from "./modules/rentalRequest/landlord.rentalRequest.route";
 
 const app = express();
 
@@ -37,6 +38,10 @@ app.use("/api/landlord", landlordPropertyRoutes);
 app.use(
   "/api/rental-requests",
   rentalRequestRoutes
+);
+app.use(
+  "/api/landlord",
+  landlordRentalRequestRoutes
 );
 
 export default app;
