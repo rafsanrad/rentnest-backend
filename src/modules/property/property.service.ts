@@ -70,8 +70,10 @@ export const getAllProperties = async (filters: {
 
   const properties = await prisma.property.findMany({
     where: {
+      // Only show available properties
       status: "AVAILABLE",
 
+      // Search by title or description
       ...(search && {
         OR: [
           {
@@ -89,6 +91,7 @@ export const getAllProperties = async (filters: {
         ],
       }),
 
+      // Filter by location
       ...(location && {
         location: {
           contains: location,
@@ -96,6 +99,7 @@ export const getAllProperties = async (filters: {
         },
       }),
 
+      // Filter by price range
       ...(minPrice !== undefined || maxPrice !== undefined
         ? {
             price: {
@@ -109,6 +113,7 @@ export const getAllProperties = async (filters: {
           }
         : {}),
 
+      // Filter by property type
       ...(propertyType && {
         propertyType: {
           equals: propertyType,
@@ -116,12 +121,14 @@ export const getAllProperties = async (filters: {
         },
       }),
 
+      // Filter by minimum bedrooms
       ...(bedrooms !== undefined && {
         bedrooms: {
           gte: bedrooms,
         },
       }),
 
+      // Filter by category
       ...(categoryId && {
         categoryId,
       }),
@@ -129,6 +136,7 @@ export const getAllProperties = async (filters: {
 
     include: {
       category: true,
+
       landlord: {
         select: {
           id: true,
