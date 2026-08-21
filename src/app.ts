@@ -6,6 +6,7 @@ import categoryRoutes from "./modules/category/category.route";
 import adminCategoryRoutes from "./modules/category/admin.category.route";
 import propertyRoutes from "./modules/property/property.route";
 import landlordPropertyRoutes from "./modules/property/landlord.property.route";
+import rentalRequestRoutes from "./modules/rentalRequest/rentalRequest.route";
 
 const app = express();
 
@@ -33,5 +34,9 @@ app.use("/api/admin", adminCategoryRoutes);
 //separeted two routes
 app.use("/api/properties", propertyRoutes);
 app.use("/api/landlord", landlordPropertyRoutes);
+app.use(
+  "/api/rental-requests",
+  rentalRequestRoutes
+);
 
 export default app;
