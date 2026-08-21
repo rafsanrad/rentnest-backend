@@ -5,8 +5,6 @@ import {
   login,
   getMe,
 } from "./auth.controller";
-
-
 import {
   registerSchema,
   loginSchema,
