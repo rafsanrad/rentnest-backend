@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createProperty ,getAllProperties} from "./property.service";
+import { createProperty ,getAllProperties, getPropertyById} from "./property.service";
 
 export const createPropertyController = async (
   req: Request,
@@ -70,6 +70,32 @@ export const getPropertiesController = async (
     return res.status(500).json({
       success: false,
       message: "Failed to retrieve properties",
+      errorDetails: null,
+    });
+  }
+};
+
+export const getPropertyByIdController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const id = req.params.id as string;
+
+    const property = await getPropertyById(id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Property retrieved successfully",
+      data: property,
+    });
+  } catch (error) {
+    return res.status(404).json({
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Property not found",
       errorDetails: null,
     });
   }

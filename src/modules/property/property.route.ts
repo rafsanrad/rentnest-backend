@@ -1,8 +1,20 @@
 import { Router } from "express";
-import { getPropertiesController } from "./property.controller";
+
+import {
+  getPropertiesController,
+  getPropertyByIdController,
+} from "./property.controller";
 
 const router = Router();
 
-router.get("/", getPropertiesController);
+router.get(
+  "/",
+  getPropertiesController
+);
+
+router.get(
+  "/:id",
+  getPropertyByIdController
+);
 
 export default router;

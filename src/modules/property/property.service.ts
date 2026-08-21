@@ -145,3 +145,28 @@ export const getAllProperties = async (filters: {
 
   return properties;
 };
+
+export const getPropertyById = async (id: string) => {
+  const property = await prisma.property.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      category: true,
+      landlord: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      reviews: true,
+    },
+  });
+
+  if (!property) {
+    throw new Error("Property not found");
+  }
+
+  return property;
+};
