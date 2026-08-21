@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import {
+    cancelRentalRequestController,
   createRentalRequestController,
   getMyRentalRequestsController,
 } from "./rentalRequest.controller";
@@ -14,6 +15,14 @@ import { authenticate } from "../../middleware/auth";
 
 const router = Router();
 
+router.get(
+  "/my",
+  authenticate,
+  authorize("TENANT"),
+  getMyRentalRequestsController
+);
+
+
 router.post(
   "/",
   authenticate,
@@ -22,11 +31,11 @@ router.post(
   createRentalRequestController
 );
 
-router.get(
-  "/my",
+router.patch(
+  "/:id/cancel",
   authenticate,
   authorize("TENANT"),
-  getMyRentalRequestsController
+  cancelRentalRequestController
 );
 
 export default router;

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
 import {
+    cancelRentalRequest,
   createRentalRequest,
   getLandlordRentalRequests,
   getMyRentalRequests,
@@ -160,6 +161,53 @@ export const getMyRentalRequestsController = async (
         error instanceof Error
           ? error.message
           : "Failed to retrieve rental requests",
+      errorDetails: null,
+    });
+  }
+};
+
+export const cancelRentalRequestController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication required",
+        errorDetails: null,
+      });
+    }
+
+    const requestId = req.params.id as string;
+
+    const cancelledRequest =
+      await cancelRentalRequest(
+        requestId,
+        req.user.userId
+      );
+
+    return res.status(200).json({
+      success: true,
+      message: "Rental request cancelled successfully",
+      data: cancelledRequest,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to cancel rental request";
+
+    const statusCode =
+      message === "Rental request not found"
+        ? 404
+        : message.includes("not allowed")
+        ? 403
+        : 400;
+
+    return res.status(statusCode).json({
+      success: false,
+      message,
       errorDetails: null,
     });
   }

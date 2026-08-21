@@ -215,3 +215,50 @@ export const getMyRentalRequests = async (
 
   return rentalRequests;
 };
+
+export const cancelRentalRequest = async (
+  requestId: string,
+  tenantId: string
+) => {
+  // 1. Find rental request
+  const rentalRequest =
+    await prisma.rentalRequest.findUnique({
+      where: {
+        id: requestId,
+      },
+    });
+
+  if (!rentalRequest) {
+    throw new Error("Rental request not found");
+  }
+
+  // 2. Check ownership
+  if (rentalRequest.tenantId !== tenantId) {
+    throw new Error(
+      "You are not allowed to cancel this rental request"
+    );
+  }
+
+  // 3. Only pending requests can be cancelled
+  if (rentalRequest.status !== "PENDING") {
+    throw new Error(
+      "Only pending rental requests can be cancelled"
+    );
+  }
+
+  // 4. Cancel request
+  const cancelledRequest =
+    await prisma.rentalRequest.update({
+      where: {
+        id: requestId,
+      },
+      data: {
+        status: "CANCELLED",
+      },
+      include: {
+        property: true,
+      },
+    });
+
+  return cancelledRequest;
+};

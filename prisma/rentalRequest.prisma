@@ -4,6 +4,7 @@ enum RentalRequestStatus {
   REJECTED
   ACTIVE
   COMPLETED
+  CANCELLED
 }
 
 model RentalRequest {
