@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import {
   createPropertyController,
+  deletePropertyController,
   updatePropertyController,
 } from "./property.controller";
 import { authorize } from "../../middleware/role.middleware";
@@ -29,6 +30,13 @@ router.patch(
   authorize("LANDLORD"),
   validate(updatePropertySchema),
   updatePropertyController
+);
+
+router.delete(
+  "/properties/:id",
+  authenticate,
+  authorize("LANDLORD"),
+  deletePropertyController
 );
 
 export default router;

@@ -230,3 +230,30 @@ export const updateProperty = async (
 
   return updatedProperty;
 };
+
+export const deleteProperty = async (
+  id: string,
+  landlordId: string
+) => {
+  const property = await prisma.property.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!property) {
+    throw new Error("Property not found");
+  }
+
+  if (property.landlordId !== landlordId) {
+    throw new Error(
+      "You are not allowed to delete this property"
+    );
+  }
+
+  await prisma.property.delete({
+    where: {
+      id,
+    },
+  });
+};
