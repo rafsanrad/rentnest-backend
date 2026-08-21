@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRoutes from "./modules/auth/auth.route";
 import categoryRoutes from "./modules/category/category.route";
+import adminCategoryRoutes from "./modules/category/admin.category.route";
 
 const app = express();
 
@@ -26,5 +27,6 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/admin", adminCategoryRoutes);
 
 export default app;
