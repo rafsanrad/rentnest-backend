@@ -48,3 +48,100 @@ export const createProperty = async (
 
   return property;
 };
+
+export const getAllProperties = async (filters: {
+  search?: string;
+  location?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  propertyType?: string;
+  bedrooms?: number;
+  categoryId?: string;
+}) => {
+  const {
+    search,
+    location,
+    minPrice,
+    maxPrice,
+    propertyType,
+    bedrooms,
+    categoryId,
+  } = filters;
+
+  const properties = await prisma.property.findMany({
+    where: {
+      status: "AVAILABLE",
+
+      ...(search && {
+        OR: [
+          {
+            title: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            description: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        ],
+      }),
+
+      ...(location && {
+        location: {
+          contains: location,
+          mode: "insensitive",
+        },
+      }),
+
+      ...(minPrice !== undefined || maxPrice !== undefined
+        ? {
+            price: {
+              ...(minPrice !== undefined && {
+                gte: minPrice,
+              }),
+              ...(maxPrice !== undefined && {
+                lte: maxPrice,
+              }),
+            },
+          }
+        : {}),
+
+      ...(propertyType && {
+        propertyType: {
+          equals: propertyType,
+          mode: "insensitive",
+        },
+      }),
+
+      ...(bedrooms !== undefined && {
+        bedrooms: {
+          gte: bedrooms,
+        },
+      }),
+
+      ...(categoryId && {
+        categoryId,
+      }),
+    },
+
+    include: {
+      category: true,
+      landlord: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return properties;
+};

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createProperty } from "./property.service";
+import { createProperty ,getAllProperties} from "./property.service";
 
 export const createPropertyController = async (
   req: Request,
@@ -25,6 +25,51 @@ export const createPropertyController = async (
         error instanceof Error
           ? error.message
           : "Failed to create property",
+      errorDetails: null,
+    });
+  }
+};
+
+export const getPropertiesController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const {
+      search,
+      location,
+      minPrice,
+      maxPrice,
+      propertyType,
+      bedrooms,
+      categoryId,
+    } = req.query;
+
+    const properties = await getAllProperties({
+      search: search as string | undefined,
+      location: location as string | undefined,
+      minPrice: minPrice
+        ? Number(minPrice)
+        : undefined,
+      maxPrice: maxPrice
+        ? Number(maxPrice)
+        : undefined,
+      propertyType: propertyType as string | undefined,
+      bedrooms: bedrooms
+        ? Number(bedrooms)
+        : undefined,
+      categoryId: categoryId as string | undefined,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Properties retrieved successfully",
+      data: properties,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to retrieve properties",
       errorDetails: null,
     });
   }
