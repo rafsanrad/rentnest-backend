@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createProperty ,getAllProperties, getPropertyById} from "./property.service";
+import { createProperty ,getAllProperties, getPropertyById, updateProperty} from "./property.service";
 
 export const createPropertyController = async (
   req: Request,
@@ -96,6 +96,53 @@ export const getPropertyByIdController = async (
         error instanceof Error
           ? error.message
           : "Property not found",
+      errorDetails: null,
+    });
+  }
+};
+
+export const updatePropertyController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication required",
+        errorDetails: null,
+      });
+    }
+
+    const id = req.params.id as string;
+
+    const updatedProperty = await updateProperty(
+      id,
+      req.user.userId,
+      req.body
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Property updated successfully",
+      data: updatedProperty,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to update property";
+
+    const statusCode =
+      message === "Property not found"
+        ? 404
+        : message.includes("not allowed")
+        ? 403
+        : 400;
+
+    return res.status(statusCode).json({
+      success: false,
+      message,
       errorDetails: null,
     });
   }

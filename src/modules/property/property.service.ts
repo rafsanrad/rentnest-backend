@@ -170,3 +170,63 @@ export const getPropertyById = async (id: string) => {
 
   return property;
 };
+
+interface UpdatePropertyData {
+  title?: string;
+  description?: string;
+  location?: string;
+  price?: number;
+  propertyType?: string;
+  bedrooms?: number;
+  bathrooms?: number;
+  amenities?: string[];
+  imageUrl?: string;
+  categoryId?: string;
+  status?: "AVAILABLE" | "RENTED" | "UNAVAILABLE";
+}
+
+export const updateProperty = async (
+  id: string,
+  landlordId: string,
+  data: UpdatePropertyData
+) => {
+  const property = await prisma.property.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!property) {
+    throw new Error("Property not found");
+  }
+
+  if (property.landlordId !== landlordId) {
+    throw new Error(
+      "You are not allowed to update this property"
+    );
+  }
+
+  if (data.categoryId) {
+    const category = await prisma.category.findUnique({
+      where: {
+        id: data.categoryId,
+      },
+    });
+
+    if (!category) {
+      throw new Error("Category not found");
+    }
+  }
+
+  const updatedProperty = await prisma.property.update({
+    where: {
+      id,
+    },
+    data,
+    include: {
+      category: true,
+    },
+  });
+
+  return updatedProperty;
+};
