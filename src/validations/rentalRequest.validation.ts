@@ -15,3 +15,7 @@ export const createRentalRequestSchema = z.object({
     .max(500, "Message must not exceed 500 characters")
     .optional(),
 });
+
+export const updateRentalRequestStatusSchema = z.object({
+  status: z.enum(["APPROVED", "REJECTED"]),
+});

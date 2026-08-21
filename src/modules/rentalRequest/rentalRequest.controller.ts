@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import {
   createRentalRequest,
   getLandlordRentalRequests,
+  updateRentalRequestStatus,
 } from "./rentalRequest.service";
 
 export const createRentalRequestController = async (
@@ -75,6 +76,54 @@ export const getLandlordRentalRequestsController = async (
         error instanceof Error
           ? error.message
           : "Failed to retrieve rental requests",
+      errorDetails: null,
+    });
+  }
+};
+
+export const updateRentalRequestStatusController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication required",
+        errorDetails: null,
+      });
+    }
+
+    const requestId = req.params.id as string;
+
+    const updatedRequest =
+      await updateRentalRequestStatus(
+        requestId,
+        req.user.userId,
+        req.body.status
+      );
+
+    return res.status(200).json({
+      success: true,
+      message: `Rental request ${req.body.status.toLowerCase()} successfully`,
+      data: updatedRequest,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to update rental request";
+
+    const statusCode =
+      message === "Rental request not found"
+        ? 404
+        : message.includes("not allowed")
+        ? 403
+        : 400;
+
+    return res.status(statusCode).json({
+      success: false,
+      message,
       errorDetails: null,
     });
   }
