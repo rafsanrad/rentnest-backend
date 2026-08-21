@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import {
   createRentalRequestController,
+  getMyRentalRequestsController,
 } from "./rentalRequest.controller";
 import { authorize } from "../../middleware/role.middleware";
 import { validate } from "../../middleware/validation.middleware";
@@ -19,6 +20,13 @@ router.post(
   authorize("TENANT"),
   validate(createRentalRequestSchema),
   createRentalRequestController
+);
+
+router.get(
+  "/my",
+  authenticate,
+  authorize("TENANT"),
+  getMyRentalRequestsController
 );
 
 export default router;

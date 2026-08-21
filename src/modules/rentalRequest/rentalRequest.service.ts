@@ -180,3 +180,38 @@ export const updateRentalRequestStatus = async (
 
   return updatedRequest;
 };
+
+export const getMyRentalRequests = async (
+  tenantId: string
+) => {
+  const rentalRequests =
+    await prisma.rentalRequest.findMany({
+      where: {
+        tenantId,
+      },
+
+      include: {
+        property: {
+          select: {
+            id: true,
+            title: true,
+            location: true,
+            price: true,
+            propertyType: true,
+            bedrooms: true,
+            bathrooms: true,
+            imageUrl: true,
+            status: true,
+          },
+        },
+
+        payment: true,
+      },
+
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+  return rentalRequests;
+};
