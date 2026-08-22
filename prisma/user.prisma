@@ -19,4 +19,5 @@ model User {
   properties     Property[]
   rentalRequests RentalRequest[]
   reviews        Review[]
+  watchlists     Watchlist[]
 }

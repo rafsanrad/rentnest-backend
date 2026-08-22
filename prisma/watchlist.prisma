@@ -1,0 +1,11 @@
+model Watchlist {
+  id         String   @id @default(uuid())
+  tenantId   String
+  propertyId String
+  createdAt  DateTime @default(now())
+
+  tenant   User     @relation(fields: [tenantId], references: [id])
+  property Property @relation(fields: [propertyId], references: [id])
+
+  @@unique([tenantId, propertyId])
+}
