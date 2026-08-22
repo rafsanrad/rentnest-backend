@@ -16,6 +16,7 @@ import { authenticate } from "../../middleware/auth";
 
 const router = Router();
 
+
 router.post(
   "/properties",
   authenticate,
