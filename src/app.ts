@@ -10,6 +10,7 @@ import rentalRequestRoutes from "./modules/rentalRequest/rentalRequest.route";
 import landlordRentalRequestRoutes from "./modules/rentalRequest/landlord.rentalRequest.route";
 import paymentRoutes from "./modules/payment/payment.route";
 import { stripeWebhookController } from "./modules/payment/payment.controller";
+import reviewRoutes from "./modules/review/review.route";
 
 const app = express();
 
@@ -53,5 +54,6 @@ app.use(
 );
 
 app.use("/api/payments", paymentRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 export default app;
