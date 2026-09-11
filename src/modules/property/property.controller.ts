@@ -1,12 +1,20 @@
 import { Request, Response } from "express";
-import { createProperty ,deleteProperty,getAllProperties, getPropertyById, updateProperty} from "./property.service";
+
+import {
+  createProperty,
+  deleteProperty,
+  getAllProperties,
+  getMyProperties,
+  getPropertyById,
+  updateProperty,
+} from "./property.service";
 
 export const createPropertyController = async (
   req: Request,
   res: Response
 ) => {
   try {
-    const landlordId = req.user!.userId ;
+    const landlordId = req.user!.userId;
 
     const property = await createProperty({
       ...req.body,
@@ -54,11 +62,13 @@ export const getPropertiesController = async (
       maxPrice: maxPrice
         ? Number(maxPrice)
         : undefined,
-      propertyType: propertyType as string | undefined,
+      propertyType:
+        propertyType as string | undefined,
       bedrooms: bedrooms
         ? Number(bedrooms)
         : undefined,
-      categoryId: categoryId as string | undefined,
+      categoryId:
+        categoryId as string | undefined,
     });
 
     return res.status(200).json({
@@ -70,6 +80,41 @@ export const getPropertiesController = async (
     return res.status(500).json({
       success: false,
       message: "Failed to retrieve properties",
+      errorDetails: null,
+    });
+  }
+};
+
+export const getMyPropertiesController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication required",
+        errorDetails: null,
+      });
+    }
+
+    const properties = await getMyProperties(
+      req.user.userId
+    );
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Your properties retrieved successfully",
+      data: properties,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to retrieve your properties",
       errorDetails: null,
     });
   }
@@ -116,11 +161,12 @@ export const updatePropertyController = async (
 
     const id = req.params.id as string;
 
-    const updatedProperty = await updateProperty(
-      id,
-      req.user.userId,
-      req.body
-    );
+    const updatedProperty =
+      await updateProperty(
+        id,
+        req.user.userId,
+        req.body
+      );
 
     return res.status(200).json({
       success: true,
