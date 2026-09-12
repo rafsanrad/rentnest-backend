@@ -22,9 +22,21 @@ import watchlistRoutes from "./modules/watchlist/watchlist.route";
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://rentnext-frontend.vercel.app",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
@@ -50,51 +62,22 @@ app.use("/api/auth", authRoutes);
 
 app.use("/api/categories", categoryRoutes);
 
-// Existing admin category routes
-app.use(
-  "/api/admin",
-  adminCategoryRoutes
-);
+app.use("/api/admin", adminCategoryRoutes);
 
-// Admin dashboard routes
-app.use(
-  "/api/admin",
-  adminRoutes
-);
+app.use("/api/admin", adminRoutes);
 
-app.use(
-  "/api/properties",
-  propertyRoutes
-);
+app.use("/api/properties", propertyRoutes);
 
-app.use(
-  "/api/landlord",
-  landlordPropertyRoutes
-);
+app.use("/api/landlord", landlordPropertyRoutes);
 
-app.use(
-  "/api/rental-requests",
-  rentalRequestRoutes
-);
+app.use("/api/rental-requests", rentalRequestRoutes);
 
-app.use(
-  "/api/landlord",
-  landlordRentalRequestRoutes
-);
+app.use("/api/landlord", landlordRentalRequestRoutes);
 
-app.use(
-  "/api/payments",
-  paymentRoutes
-);
+app.use("/api/payments", paymentRoutes);
 
-app.use(
-  "/api/reviews",
-  reviewRoutes
-);
+app.use("/api/reviews", reviewRoutes);
 
-app.use(
-  "/api/watchlist",
-  watchlistRoutes
-);
+app.use("/api/watchlist", watchlistRoutes);
 
 export default app;
