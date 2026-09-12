@@ -46,7 +46,14 @@ export const createReview = async (
     );
   }
 
-  // 5. Check payment
+  // 5. Review is only allowed for an active rental
+  if (rentalRequest.status !== "ACTIVE") {
+    throw new Error(
+      "You can only review an active rental"
+    );
+  }
+
+  // 6. Check payment
   if (
     !rentalRequest.payment ||
     rentalRequest.payment.status !== "COMPLETED"
@@ -56,7 +63,7 @@ export const createReview = async (
     );
   }
 
-  // 6. Check if already reviewed
+  // 7. Check if already reviewed
   const existingReview =
     await prisma.review.findUnique({
       where: {
@@ -70,33 +77,53 @@ export const createReview = async (
     );
   }
 
-  // 7. Create review
-  const review = await prisma.review.create({
-    data: {
-      tenantId: data.tenantId,
-      propertyId: data.propertyId,
-      rentalRequestId: data.rentalRequestId,
-      rating: data.rating,
-      comment: data.comment,
-    },
-    include: {
-      tenant: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
+  // 8. Create review and complete rental
+  const result = await prisma.$transaction(
+    async (tx) => {
+      const review = await tx.review.create({
+        data: {
+          tenantId: data.tenantId,
+          propertyId: data.propertyId,
+          rentalRequestId: data.rentalRequestId,
+          rating: data.rating,
+          comment: data.comment,
         },
-      },
-      property: {
-        select: {
-          id: true,
-          title: true,
-        },
-      },
-    },
-  });
 
-  return review;
+        include: {
+          tenant: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+
+          property: {
+            select: {
+              id: true,
+              title: true,
+            },
+          },
+        },
+      });
+
+      // After submitting the review,
+      // the rental becomes completed.
+      await tx.rentalRequest.update({
+        where: {
+          id: data.rentalRequestId,
+        },
+
+        data: {
+          status: "COMPLETED",
+        },
+      });
+
+      return review;
+    }
+  );
+
+  return result;
 };
 
 // Get reviews of a property
@@ -172,12 +199,15 @@ export const updateReview = async (
     );
   }
 
+  // Update review
   const updatedReview =
     await prisma.review.update({
       where: {
         id: reviewId,
       },
+
       data,
+
       include: {
         tenant: {
           select: {
@@ -185,6 +215,7 @@ export const updateReview = async (
             name: true,
           },
         },
+
         property: {
           select: {
             id: true,
@@ -202,6 +233,7 @@ export const deleteReview = async (
   reviewId: string,
   tenantId: string
 ) => {
+  // Find review
   const review = await prisma.review.findUnique({
     where: {
       id: reviewId,
@@ -219,6 +251,7 @@ export const deleteReview = async (
     );
   }
 
+  // Delete review
   await prisma.review.delete({
     where: {
       id: reviewId,

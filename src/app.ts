@@ -6,12 +6,17 @@ import "./types/express";
 import authRoutes from "./modules/auth/auth.route";
 import categoryRoutes from "./modules/category/category.route";
 import adminCategoryRoutes from "./modules/category/admin.category.route";
+import adminRoutes from "./modules/admin/admin.route";
+
 import propertyRoutes from "./modules/property/property.route";
 import landlordPropertyRoutes from "./modules/property/landlord.property.route";
+
 import rentalRequestRoutes from "./modules/rentalRequest/rentalRequest.route";
 import landlordRentalRequestRoutes from "./modules/rentalRequest/landlord.rentalRequest.route";
+
 import paymentRoutes from "./modules/payment/payment.route";
 import { stripeWebhookController } from "./modules/payment/payment.controller";
+
 import reviewRoutes from "./modules/review/review.route";
 import watchlistRoutes from "./modules/watchlist/watchlist.route";
 
@@ -42,22 +47,54 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+
 app.use("/api/categories", categoryRoutes);
-app.use("/api/admin", adminCategoryRoutes);
-//separeted two routes
-app.use("/api/properties", propertyRoutes);
-app.use("/api/landlord", landlordPropertyRoutes);
+
+// Existing admin category routes
+app.use(
+  "/api/admin",
+  adminCategoryRoutes
+);
+
+// Admin dashboard routes
+app.use(
+  "/api/admin",
+  adminRoutes
+);
+
+app.use(
+  "/api/properties",
+  propertyRoutes
+);
+
+app.use(
+  "/api/landlord",
+  landlordPropertyRoutes
+);
+
 app.use(
   "/api/rental-requests",
   rentalRequestRoutes
 );
+
 app.use(
   "/api/landlord",
   landlordRentalRequestRoutes
 );
 
-app.use("/api/payments", paymentRoutes);
-app.use("/api/reviews", reviewRoutes);
-app.use("/api/watchlist", watchlistRoutes);
+app.use(
+  "/api/payments",
+  paymentRoutes
+);
+
+app.use(
+  "/api/reviews",
+  reviewRoutes
+);
+
+app.use(
+  "/api/watchlist",
+  watchlistRoutes
+);
 
 export default app;
