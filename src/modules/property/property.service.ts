@@ -70,10 +70,8 @@ export const getAllProperties = async (filters: {
 
   const properties = await prisma.property.findMany({
     where: {
-      // Only show available properties
       status: "AVAILABLE",
 
-      // Search by title or description
       ...(search && {
         OR: [
           {
@@ -91,7 +89,6 @@ export const getAllProperties = async (filters: {
         ],
       }),
 
-      // Filter by location
       ...(location && {
         location: {
           contains: location,
@@ -99,7 +96,6 @@ export const getAllProperties = async (filters: {
         },
       }),
 
-      // Filter by price range
       ...(minPrice !== undefined || maxPrice !== undefined
         ? {
             price: {
@@ -113,7 +109,6 @@ export const getAllProperties = async (filters: {
           }
         : {}),
 
-      // Filter by property type
       ...(propertyType && {
         propertyType: {
           equals: propertyType,
@@ -121,14 +116,12 @@ export const getAllProperties = async (filters: {
         },
       }),
 
-      // Filter by minimum bedrooms
       ...(bedrooms !== undefined && {
         bedrooms: {
           gte: bedrooms,
         },
       }),
 
-      // Filter by category
       ...(categoryId && {
         categoryId,
       }),
@@ -157,20 +150,19 @@ export const getAllProperties = async (filters: {
 export const getMyProperties = async (
   landlordId: string
 ) => {
-  const properties =
-    await prisma.property.findMany({
-      where: {
-        landlordId,
-      },
+  const properties = await prisma.property.findMany({
+    where: {
+      landlordId,
+    },
 
-      include: {
-        category: true,
-      },
+    include: {
+      category: true,
+    },
 
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
   return properties;
 };
@@ -180,8 +172,10 @@ export const getPropertyById = async (id: string) => {
     where: {
       id,
     },
+
     include: {
       category: true,
+
       landlord: {
         select: {
           id: true,
@@ -189,6 +183,7 @@ export const getPropertyById = async (id: string) => {
           email: true,
         },
       },
+
       reviews: true,
     },
   });
@@ -251,7 +246,9 @@ export const updateProperty = async (
     where: {
       id,
     },
+
     data,
+
     include: {
       category: true,
     },
@@ -280,9 +277,12 @@ export const deleteProperty = async (
     );
   }
 
-  await prisma.property.delete({
+  await prisma.property.update({
     where: {
       id,
+    },
+    data: {
+      status: "UNAVAILABLE",
     },
   });
 };
